@@ -1,0 +1,27 @@
+﻿@model ReportViewModel
+
+<h2>Generate Reports</h2>
+<form asp-action="Generate">
+    <div>
+        <label>Select Report:</label>
+        <select asp-for="SelectedReport" asp-items="Model.ReportOptions">
+            <option>Monthly Claim Summary</option>
+            <option>Unpaid Invoices</option>
+            <option>Approved Claims</option>
+            <option>Pending Claims</option>
+        </select>
+    </div>
+    <div>
+        <label>Date Range:</label>
+        <input type="date" asp-for="StartDate" />
+        <span>to</span>
+        <input type="date" asp-for="EndDate" />
+    </div>
+    <input type="submit" value="Generate Report" />
+</form>
+
+<h3>Export Report</h3>
+<form asp-action="Export">
+    <input type="submit" value="Export as PDF" />
+    <input type="submit" value="Export as Excel" />
+</form>

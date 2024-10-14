@@ -1,0 +1,42 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Your Application Name</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                @if (HttpContextAccessor.HttpContext.Session.GetString("Username") != null) // User is logged in
+                {
+                    <li><a asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                    <li><a asp-controller="Home" asp-action="Privacy">Privacy</a></li>
+                    <li><a asp-controller="Home" asp-action="Logout">Logout</a></li>
+                }
+                else
+                {
+                    <li><a asp-controller="Home" asp-action="Index">Welcome</a></li>
+                }
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        @RenderBody()
+    </div>
+
+    <footer>
+        <p>&copy; 2024 - Your Application Name</p>
+    </footer>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+    @RenderSection("Scripts", required: false) <!-- Ensure scripts section is rendered if needed -->
+</body>
+</html>
