@@ -1,55 +1,54 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyApp.Models;
 
 public class ClaimsController : Controller
 {
     // Simulated database or claims storage
-    private List<Claim> claimsDb = new List<Claim>();
+    private List<LecturerClaim> claimsDb = new List<LecturerClaim>();
 
-    public class ClaimSubmissionViewModel
+    public class LecturerClaimViewModel
     {
         public int HoursWorked { get; set; }
         public decimal HourlyRate { get; set; }
-        public string AdditionalNotes { get; set; }
+        public string Notes { get; set; }
     }
 
-    // Change this action to return the SubmitClaim view
     [HttpGet]
-    [Route("Home/SubmitClaim")] // This makes it accessible via /Home/SubmitClaim
     public IActionResult SubmitClaim()
     {
-        return View();
+        // Display the form to the user
+        return View("~/Views/Home/SubmitClaim.cshtml");
     }
 
     [HttpPost]
-    [Route("Home/SubmitClaim")] // Same route for POST requests
-    public IActionResult SubmitClaim(ClaimSubmissionViewModel model)
+    public IActionResult SubmitClaim(LecturerClaimViewModel model)
     {
         if (ModelState.IsValid)
         {
             // Add the new claim to the database (in-memory list for now)
-            var newClaim = new Claim
+            var newClaim = new LecturerClaim
             {
                 ClaimId = claimsDb.Count + 1,
                 HoursWorked = model.HoursWorked,
                 HourlyRate = model.HourlyRate,
-                AdditionalNotes = model.AdditionalNotes,
+                AdditionalNotes = model.Notes,
                 Status = "Pending",
                 DateSubmitted = DateTime.Now
             };
 
             claimsDb.Add(newClaim);
 
-            // Redirect to a confirmation or claims list page
+            // Redirect to a confirmation page
             return RedirectToAction("ClaimConfirmation");
         }
 
-        // If model state is invalid, return the form with validation errors
-        return View(model);
+        // If the model is not valid, re-display the form with validation errors
+        return View("~/Views/Home/SubmitClaim.cshtml", model);
     }
-
 
     public IActionResult ClaimConfirmation()
     {
-        return View();
+        // Show a confirmation message
+        return View("~/Views/Home/ClaimConfirmation.cshtml");
     }
 }

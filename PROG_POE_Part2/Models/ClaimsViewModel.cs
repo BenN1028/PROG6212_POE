@@ -4,13 +4,13 @@ public class ClaimsViewModel
 {
     public string SelectedStatus { get; set; }
     public SelectList StatusOptions { get; set; }
-    public List<Claim> Claims { get; set; }
+    public List<LecturerClaim> Claims { get; set; }
 
     // Property to hold the new claim being submitted
-    public Claim NewClaim { get; set; } = new Claim();
+    public LecturerClaim NewClaim { get; set; } = new LecturerClaim();
 }
 
-public class Claim
+public class LecturerClaim
 {
     public int ClaimId { get; set; }
     public int HoursWorked { get; set; }

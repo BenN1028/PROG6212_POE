@@ -1,24 +1,34 @@
 ﻿@model LecturerClaimViewModel
 
-<h2>Submit a New Claim</h2>
+<h2>Submit Claim</h2>
 
 <form asp-action="SubmitClaim" method="post">
-    <div>
-        <label>Hours Worked:</label>
-        <input asp-for="HoursWorked" type="number" min="1" required />
+    <div class="form-group mb-3">
+        <label asp-for="HoursWorked" class="form-label"></label>
+        <input asp-for="HoursWorked" class="form-control" />
         <span asp-validation-for="HoursWorked" class="text-danger"></span>
     </div>
-    <div>
-        <label>Hourly Rate:</label>
-        <input asp-for="HourlyRate" type="number" step="0.01" required />
+
+    <div class="form-group mb-3">
+        <label asp-for="HourlyRate" class="form-label"></label>
+        <input asp-for="HourlyRate" class="form-control" />
         <span asp-validation-for="HourlyRate" class="text-danger"></span>
     </div>
-    <div>
-        <label>Additional Notes:</label>
-        <textarea asp-for="Notes"></textarea>
+
+    <div class="form-group mb-3">
+        <label asp-for="Notes" class="form-label"></label>
+        <textarea asp-for="Notes" class="form-control"></textarea>
         <span asp-validation-for="Notes" class="text-danger"></span>
     </div>
-    <div>
-        <button type="submit">Submit Claim</button>
+
+    <!-- Validation summary for any form validation errors -->
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit Claim</button>
     </div>
 </form>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -1,12 +1,11 @@
 ﻿<h2>Dashboard</h2>
 
-<div>
+<div class="dashboard-links">
     <a asp-action="Index" asp-controller="Contracts">Contracts</a>
     <a asp-action="Index" asp-controller="Claims">Claims</a>
     <a asp-action="Index" asp-controller="Invoices">Invoices</a>
     <a asp-action="Index" asp-controller="Reports">Reports</a>
-    <a asp-controller="Home" asp-action="SubmitClaim">Submit Claim</a>
-
+    <a asp-action="SubmitClaim" asp-controller="Claims">Submit Claim</a>
 </div>
 
 <div>
@@ -16,5 +15,5 @@
 </div>
 
 <form>
-    <input type="text" placeholder="Search..." />
+    <input type="text" placeholder="Search..." class="form-control" />
 </form>
