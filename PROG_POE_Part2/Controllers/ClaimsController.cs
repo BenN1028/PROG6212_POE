@@ -15,6 +15,12 @@ public class ClaimsController : Controller
         return View(new LecturerClaimViewModel());
     }
 
+    public IActionResult ClaimConfirmation()
+    {
+        return View();
+    }
+
+
     // This method processes the claim submission
     [HttpPost]
     public IActionResult SubmitClaim(LecturerClaimViewModel model)
@@ -25,7 +31,7 @@ public class ClaimsController : Controller
             var newClaim = new Claim
             {
                 ClaimId = claimsDb.Count + 1, // Generate a new ID
-                LecturerName = "Lecturer Name", // You can replace this with the actual logged-in user's name
+                LecturerName = "Lecturer Name", // Replace with actual logged-in user's name
                 HoursWorked = model.HoursWorked,
                 HourlyRate = model.HourlyRate,
                 DateSubmitted = DateTime.Now,
@@ -35,7 +41,7 @@ public class ClaimsController : Controller
 
             claimsDb.Add(newClaim); // Add to the list
 
-            return RedirectToAction("VerifyClaims");
+            return RedirectToAction("ClaimConfirmation");
         }
 
         return View(model);
@@ -46,9 +52,9 @@ public class ClaimsController : Controller
     public IActionResult VerifyClaims()
     {
         // Restrict access based on user role
-        if (!User.IsInRole("ProgrammeCoordinator") && !User.IsInRole("AcademicManager"))
+        if (User.IsInRole("ProgrammeCoordinator") || User.IsInRole("AcademicManager"))
         {
-            return Forbid(); // Return 403 Forbidden if the user is not authorized
+            return View(); // Return 403 Forbidden if the user is not authorized
         }
 
         // Fetch all pending claims
@@ -67,6 +73,7 @@ public class ClaimsController : Controller
 
         return View(model);
     }
+
 
     // POST method for approving claims
     [HttpPost]

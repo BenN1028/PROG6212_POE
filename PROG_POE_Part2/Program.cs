@@ -11,11 +11,17 @@ builder.Services.AddSession(); // Add session services
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Configure authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Login/Index"; // Set the path to your login page
-    });
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "Cookies";
+    options.DefaultSignInScheme = "Cookies";
+})
+.AddCookie(options =>
+{
+    options.LoginPath = "/Account/Login"; // Redirect to login page if not authenticated
+    options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to Access Denied page if unauthorized
+});
+
 
 // Add authorization policies if needed
 builder.Services.AddAuthorization(options =>
