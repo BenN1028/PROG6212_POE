@@ -1,16 +1,56 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyApp.Models;  // Explicitly using your custom Claim class
-using System.Linq;
+using MyApp.Models;  // Ensure you have your models in this namespace
 using System.Collections.Generic;
+using System.Linq;
 
 public class ClaimsController : Controller
 {
-    // Simulated list of claims (replace with actual database or service calls)
-    private List<MyApp.Models.Claim> claimsDb = new List<MyApp.Models.Claim>();
+    // Simulated list of claims
+    private static List<Claim> claimsDb = new List<Claim>();
 
+    // This method serves the form to submit a claim
+    [HttpGet]
+    public IActionResult SubmitClaim()
+    {
+        return View(new LecturerClaimViewModel());
+    }
+
+    // This method processes the claim submission
+    [HttpPost]
+    public IActionResult SubmitClaim(LecturerClaimViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            // Create a new Claim object and add it to the claimsDb list
+            var newClaim = new Claim
+            {
+                ClaimId = claimsDb.Count + 1, // Generate a new ID
+                LecturerName = "Lecturer Name", // You can replace this with the actual logged-in user's name
+                HoursWorked = model.HoursWorked,
+                HourlyRate = model.HourlyRate,
+                DateSubmitted = DateTime.Now,
+                Notes = model.Notes,
+                Status = "Pending" // Default status for new claims
+            };
+
+            claimsDb.Add(newClaim); // Add to the list
+
+            return RedirectToAction("VerifyClaims");
+        }
+
+        return View(model);
+    }
+
+    // This method fetches and displays pending claims
     [HttpGet]
     public IActionResult VerifyClaims()
     {
+        // Restrict access based on user role
+        if (!User.IsInRole("ProgrammeCoordinator") && !User.IsInRole("AcademicManager"))
+        {
+            return Forbid(); // Return 403 Forbidden if the user is not authorized
+        }
+
         // Fetch all pending claims
         var pendingClaims = claimsDb.Where(c => c.Status == "Pending").ToList();
 
@@ -22,16 +62,16 @@ public class ClaimsController : Controller
             HourlyRate = c.HourlyRate,
             DateSubmitted = c.DateSubmitted,
             Notes = c.Notes,
-            Status = c.Status  // Include the status for display if needed
+            Status = c.Status
         }).ToList();
 
         return View(model);
     }
 
+    // POST method for approving claims
     [HttpPost]
     public IActionResult ApproveClaim(int claimId)
     {
-        // Find the claim and approve it
         var claim = claimsDb.FirstOrDefault(c => c.ClaimId == claimId);
         if (claim != null)
         {
@@ -40,10 +80,10 @@ public class ClaimsController : Controller
         return RedirectToAction("VerifyClaims");
     }
 
+    // POST method for rejecting claims
     [HttpPost]
     public IActionResult RejectClaim(int claimId)
     {
-        // Find the claim and reject it
         var claim = claimsDb.FirstOrDefault(c => c.ClaimId == claimId);
         if (claim != null)
         {
