@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyApp.Models;  // Ensure you have your models in this namespace
+using PROG_POE_Part2.Models;  // Ensure you have your models in this namespace
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,29 +23,72 @@ public class ClaimsController : Controller
 
     // This method processes the claim submission
     [HttpPost]
-    public IActionResult SubmitClaim(LecturerClaimViewModel model)
+    public IActionResult SubmitClaim(LecturerClaimViewModel model, IFormFile supportingDocument)
     {
         if (ModelState.IsValid)
         {
-            // Create a new Claim object and add it to the claimsDb list
-            var newClaim = new Claim
+            // Check if a file was uploaded
+            if (supportingDocument != null)
             {
-                ClaimId = claimsDb.Count + 1, // Generate a new ID
-                LecturerName = "Lecturer Name", // Replace with actual logged-in user's name
-                HoursWorked = model.HoursWorked,
-                HourlyRate = model.HourlyRate,
-                DateSubmitted = DateTime.Now,
-                Notes = model.Notes,
-                Status = "Pending" // Default status for new claims
-            };
+                // Validate file size (e.g., max 2 MB)
+                if (supportingDocument.Length > 2 * 1024 * 1024) // 2 MB
+                {
+                    ModelState.AddModelError("SupportingDocument", "File size must be less than 2 MB.");
+                    return View(model);
+                }
 
-            claimsDb.Add(newClaim); // Add to the list
+                // Validate file type
+                var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
+                var fileExtension = Path.GetExtension(supportingDocument.FileName).ToLower();
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    ModelState.AddModelError("SupportingDocument", "Only PDF, DOCX, and XLSX files are allowed.");
+                    return View(model);
+                }
 
-            return RedirectToAction("ClaimConfirmation");
+                // Define the uploads directory
+                var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+
+                // Ensure the uploads directory exists
+                if (!Directory.Exists(uploadsDir))
+                {
+                    Directory.CreateDirectory(uploadsDir); // Create the directory if it does not exist
+                }
+
+                // Store the file securely
+                var fileName = Path.GetFileNameWithoutExtension(supportingDocument.FileName);
+                var newFileName = $"{fileName}_{Guid.NewGuid()}{fileExtension}"; // Ensure unique file name
+                var filePath = Path.Combine(uploadsDir, newFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    supportingDocument.CopyTo(stream);
+                }
+
+                // Create a new Claim object and add it to the claimsDb list
+                var newClaim = new Claim
+                {
+                    ClaimId = claimsDb.Count + 1, // Generate a new ID
+                    LecturerName = "Lecturer Name", // You can replace this with the actual logged-in user's name
+                    HoursWorked = model.HoursWorked,
+                    HourlyRate = model.HourlyRate,
+                    DateSubmitted = DateTime.Now,
+                    Notes = model.Notes,
+                    SupportingDocument = newFileName, // Store the document name
+                    Status = "Pending" // Default status for new claims
+                };
+
+                claimsDb.Add(newClaim); // Add to the list
+                ViewBag.UploadedFileName = newFileName; // Show uploaded file name
+
+                return RedirectToAction("ClaimConfirmation");
+            }
         }
 
         return View(model);
     }
+
+
 
     // This method fetches and displays pending claims
     [HttpGet]

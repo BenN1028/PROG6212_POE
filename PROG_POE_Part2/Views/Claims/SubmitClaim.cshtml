@@ -2,7 +2,7 @@
 
 <h2>Submit Claim</h2>
 
-<form asp-action="SubmitClaim" method="post">
+<form asp-action="SubmitClaim" method="post" enctype="multipart/form-data">
     <div class="form-group mb-3">
         <label asp-for="HoursWorked" class="form-label"></label>
         <input asp-for="HoursWorked" class="form-control" />
@@ -21,7 +21,16 @@
         <span asp-validation-for="Notes" class="text-danger"></span>
     </div>
 
-    <!-- Validation summary for any form validation errors -->
+    <div class="form-group mb-3">
+        <label for="SupportingDocument" class="form-label">Upload Supporting Document</label>
+        <input type="file" name="SupportingDocument" class="form-control" accept=".pdf,.docx,.xlsx" />
+        <span class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <span>@ViewBag.UploadedFileName</span>
+    </div>
+
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
     <div class="form-group">
