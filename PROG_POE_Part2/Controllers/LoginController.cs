@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 
 public class LoginController : Controller
 {
@@ -49,13 +51,12 @@ public class LoginController : Controller
         // This would typically query your database to find the user by username/password
         // Here is an example with mock data
         var users = new List<User>
-    {
-        new User { Username = "coordinator1", Password = "password", Role = "ProgrammeCoordinator" },
-        new User { Username = "manager1", Password = "password", Role = "AcademicManager" },
-        new User { Username = "lecturer1", Password = "password", Role = "Lecturer" }
-    };
+        {
+            new User { Username = "coordinator1", Password = "password", Role = "ProgrammeCoordinator" },
+            new User { Username = "manager1", Password = "password", Role = "AcademicManager" },
+            new User { Username = "lecturer1", Password = "password", Role = "Lecturer" }
+        };
 
         return users.FirstOrDefault(u => u.Username == username && u.Password == password);
     }
-
 }

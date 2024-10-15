@@ -1,0 +1,42 @@
+﻿@model List<ClaimViewModel>
+
+<h2>Pending Claims Verification</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Claim ID</th>
+            <th>Lecturer</th>
+            <th>Hours Worked</th>
+            <th>Hourly Rate</th>
+            <th>Total Amount</th>
+            <th>Date Submitted</th>
+            <th>Notes</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.ClaimId</td>
+                <td>@claim.LecturerName</td>
+                <td>@claim.HoursWorked</td>
+                <td>@claim.HourlyRate</td>
+                <td>@(claim.HoursWorked * claim.HourlyRate)</td>
+                <td>@claim.DateSubmitted.ToShortDateString()</td>
+                <td>@claim.Notes</td>
+                <td>
+                    <form asp-action="ApproveClaim" asp-controller="Claims" method="post" style="display:inline;">
+                        <input type="hidden" name="ClaimId" value="@claim.ClaimId" />
+                        <button type="submit" class="btn btn-success">Approve</button>
+                    </form>
+                    <form asp-action="RejectClaim" asp-controller="Claims" method="post" style="display:inline;">
+                        <input type="hidden" name="ClaimId" value="@claim.ClaimId" />
+                        <button type="submit" class="btn btn-danger">Reject</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

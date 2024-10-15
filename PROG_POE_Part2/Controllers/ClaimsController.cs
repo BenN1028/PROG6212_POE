@@ -1,54 +1,54 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyApp.Models;
+using MyApp.Models;  // Explicitly using your custom Claim class
+using System.Linq;
+using System.Collections.Generic;
 
 public class ClaimsController : Controller
 {
-    // Simulated database or claims storage
-    private List<LecturerClaim> claimsDb = new List<LecturerClaim>();
-
-    public class LecturerClaimViewModel
-    {
-        public int HoursWorked { get; set; }
-        public decimal HourlyRate { get; set; }
-        public string Notes { get; set; }
-    }
+    // Simulated list of claims (replace with actual database or service calls)
+    private List<MyApp.Models.Claim> claimsDb = new List<MyApp.Models.Claim>();
 
     [HttpGet]
-    public IActionResult SubmitClaim()
+    public IActionResult VerifyClaims()
     {
-        // Display the form to the user
-        return View("~/Views/Home/SubmitClaim.cshtml");
+        // Fetch all pending claims
+        var pendingClaims = claimsDb.Where(c => c.Status == "Pending").ToList();
+
+        var model = pendingClaims.Select(c => new ClaimViewModel
+        {
+            ClaimId = c.ClaimId,
+            LecturerName = c.LecturerName,
+            HoursWorked = c.HoursWorked,
+            HourlyRate = c.HourlyRate,
+            DateSubmitted = c.DateSubmitted,
+            Notes = c.Notes,
+            Status = c.Status  // Include the status for display if needed
+        }).ToList();
+
+        return View(model);
     }
 
     [HttpPost]
-    public IActionResult SubmitClaim(LecturerClaimViewModel model)
+    public IActionResult ApproveClaim(int claimId)
     {
-        if (ModelState.IsValid)
+        // Find the claim and approve it
+        var claim = claimsDb.FirstOrDefault(c => c.ClaimId == claimId);
+        if (claim != null)
         {
-            // Add the new claim to the database (in-memory list for now)
-            var newClaim = new LecturerClaim
-            {
-                ClaimId = claimsDb.Count + 1,
-                HoursWorked = model.HoursWorked,
-                HourlyRate = model.HourlyRate,
-                AdditionalNotes = model.Notes,
-                Status = "Pending",
-                DateSubmitted = DateTime.Now
-            };
-
-            claimsDb.Add(newClaim);
-
-            // Redirect to a confirmation page
-            return RedirectToAction("ClaimConfirmation");
+            claim.Status = "Approved";
         }
-
-        // If the model is not valid, re-display the form with validation errors
-        return View("~/Views/Home/SubmitClaim.cshtml", model);
+        return RedirectToAction("VerifyClaims");
     }
 
-    public IActionResult ClaimConfirmation()
+    [HttpPost]
+    public IActionResult RejectClaim(int claimId)
     {
-        // Show a confirmation message
-        return View("~/Views/Home/ClaimConfirmation.cshtml");
+        // Find the claim and reject it
+        var claim = claimsDb.FirstOrDefault(c => c.ClaimId == claimId);
+        if (claim != null)
+        {
+            claim.Status = "Rejected";
+        }
+        return RedirectToAction("VerifyClaims");
     }
 }

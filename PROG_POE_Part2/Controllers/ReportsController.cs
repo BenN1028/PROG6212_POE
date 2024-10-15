@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 public class ReportsController : Controller
 {
     [HttpGet]
-    public IActionResult Index()
+    public IActionResult Report()
     {
         var model = new ReportViewModel
         {
             ReportOptions = new SelectList(new[] { "Monthly Claim Summary", "Unpaid Invoices", "Approved Claims", "Pending Claims" })
         };
-        return View(model);
+        return View("~/Views/Home/Report.cshtml", model);
     }
 
     [HttpPost]
