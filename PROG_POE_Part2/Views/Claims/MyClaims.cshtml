@@ -1,0 +1,56 @@
+﻿@model List<ClaimViewModel>
+
+<h2>My Claims</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Claim ID</th>
+            <th>Hours Worked</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Progress</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.ClaimId</td>
+                <td>@claim.HoursWorked</td>
+                <td>@(claim.HoursWorked * claim.HourlyRate)</td>
+                <td>@claim.Status</td>
+                <td>
+                    <!-- Progress Bar -->
+                    <div class="progress">
+                        <div class="progress-bar @GetProgressBarClass(claim.Status)" role="progressbar" style="width: @GetProgressPercentage(claim.Status)%;" aria-valuenow="@GetProgressPercentage(claim.Status)" aria-valuemin="0" aria-valuemax="100">@claim.Status</div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+                @functions {
+    private string GetProgressBarClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "bg-warning",
+            "Approved" => "bg-success",
+            "Rejected" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private int GetProgressPercentage(string status)
+    {
+        return status switch
+        {
+            "Pending" => 50,
+            "Approved" => 100,
+            "Rejected" => 100,
+            _ => 0
+        };
+    }
+}

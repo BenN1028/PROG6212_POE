@@ -12,6 +12,7 @@
             <th>Total Amount</th>
             <th>Date Submitted</th>
             <th>Notes</th>
+            <th>Status</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -41,3 +42,21 @@
         }
     </tbody>
 </table>
+
+@section Styles {
+    <style>
+        .progress {
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+            width: 100%;
+        }
+
+        .progress-bar {
+            background-color: #007bff;
+            height: 100%;
+            transition: width 0.4s ease;
+        }
+    </style>
+}

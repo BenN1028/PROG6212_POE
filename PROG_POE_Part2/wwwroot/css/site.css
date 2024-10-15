@@ -89,3 +89,13 @@ footer {
     color: white;
     margin-top: 20px;
 }
+
+.progress {
+    height: 25px;
+}
+
+.progress-bar {
+    font-size: 14px;
+    line-height: 25px;
+    color: white;
+}

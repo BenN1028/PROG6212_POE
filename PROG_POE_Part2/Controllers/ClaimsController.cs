@@ -20,7 +20,6 @@ public class ClaimsController : Controller
         return View();
     }
 
-
     // This method processes the claim submission
     [HttpPost]
     public IActionResult SubmitClaim(LecturerClaimViewModel model, IFormFile supportingDocument)
@@ -126,11 +125,11 @@ public class ClaimsController : Controller
         if (claim != null)
         {
             claim.Status = "Approved";
+            // Optionally, you can also implement additional logic like notifying the user
         }
         return RedirectToAction("VerifyClaims");
     }
 
-    // POST method for rejecting claims
     [HttpPost]
     public IActionResult RejectClaim(int claimId)
     {
@@ -138,7 +137,25 @@ public class ClaimsController : Controller
         if (claim != null)
         {
             claim.Status = "Rejected";
+            // Optionally, you can also implement additional logic like notifying the user
         }
         return RedirectToAction("VerifyClaims");
+    }
+
+    [HttpGet]
+    public IActionResult MyClaims()
+    {
+        var lecturerName = "Lecturer Name"; // Replace with the actual logged-in lecturer's name or ID
+        var myClaims = claimsDb.Where(c => c.LecturerName == lecturerName).ToList();
+
+        var model = myClaims.Select(c => new ClaimViewModel
+        {
+            ClaimId = c.ClaimId,
+            HoursWorked = c.HoursWorked,
+            HourlyRate = c.HourlyRate,
+            Status = c.Status
+        }).ToList();
+
+        return View(model);
     }
 }

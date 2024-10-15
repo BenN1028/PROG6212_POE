@@ -10,4 +10,15 @@
 
     // Add the Status property to track the claim's status
     public string Status { get; set; }  // "Pending", "Approved", "Rejected"
+
+    public int GetProgressPercentage()
+    {
+        return Status switch
+        {
+            "Pending" => 33,
+            "Approved" => 66,
+            "Rejected" => 100,
+            _ => 0
+        };
+    }
 }
