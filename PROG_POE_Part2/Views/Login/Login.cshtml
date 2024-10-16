@@ -17,5 +17,12 @@
     <div>
         <button type="submit">Login</button>
     </div>
-</form>
 
+    <!-- Display any general errors -->
+    <div>
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0)
+        {
+            <span class="text-danger">@ViewData.ModelState[""].Errors.First().ErrorMessage</span>
+        }
+    </div>
+</form>

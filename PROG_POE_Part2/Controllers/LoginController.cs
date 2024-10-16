@@ -36,7 +36,7 @@ public class LoginController : Controller
             }
             else
             {
-                ModelState.AddModelError("", "Invalid login attempt.");
+                ModelState.AddModelError("", "Invalid username or password."); // Error message for invalid login
             }
         }
 
