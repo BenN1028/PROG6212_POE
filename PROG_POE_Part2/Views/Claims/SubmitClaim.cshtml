@@ -23,8 +23,8 @@
 
     <div class="form-group mb-3">
         <label for="SupportingDocument" class="form-label">Upload Supporting Document</label>
-        <input type="file" name="SupportingDocument" class="form-control" accept=".pdf,.docx,.xlsx" />
-        <span class="text-danger"></span>
+        <input type="file" asp-for="SupportingDocument" class="form-control" accept=".pdf,.docx,.xlsx" />
+        <span asp-validation-for="SupportingDocument" class="text-danger"></span>
     </div>
 
     <div class="form-group mb-3">

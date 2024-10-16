@@ -1,19 +1,17 @@
 ﻿<h2>Dashboard</h2>
 
 <div class="dashboard-links">
-    <a asp-action="Index" asp-controller="Contracts">Contracts</a>
     <a asp-action="MyClaims" asp-controller="Claims">My Claims</a>
-    <a asp-action="Index" asp-controller="Invoices">Invoices</a>
-    <a asp-action="Report" asp-controller="Reports">Reports</a>
     <a asp-action="SubmitClaim" asp-controller="Claims">Submit Claim</a>
 </div>
 
-<div>
-    <h3>Total Contracts: 50</h3>
-    <h3>Pending Claims: 12</h3>
-    <h3>Unpaid Invoices: 8</h3>
+<div class="dashboard-info">
+    <h3>Welcome to Your Dashboard!</h3>
+    <p>Here you can manage your claims and invoices effectively.</p>
+    <p>Click on the links above to navigate through your options.</p>
 </div>
 
-<form>
-    <input type="text" placeholder="Search..." class="form-control" />
-</form>
+<div>
+    <h4>Did you know?</h4>
+    <p>You can submit claims and track their status easily!</p>
+</div>

@@ -8,7 +8,6 @@
     public string Notes { get; set; }
     public string SupportingDocument { get; set; } // Added property for the uploaded document
 
-    // Add the Status property to track the claim's status
     public string Status { get; set; }  // "Pending", "Approved", "Rejected"
 
     public int GetProgressPercentage()
