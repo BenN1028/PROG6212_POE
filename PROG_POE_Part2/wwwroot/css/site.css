@@ -46,3 +46,69 @@ footer {
     background-color: #343a40;
     color: white;
 }
+
+.dashboard-links {
+    margin: 20px 0;
+}
+
+    .dashboard-links a {
+        width: 150px;
+    }
+
+.dashboard-info {
+    padding: 20px;
+    background-color: #f0f8ff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.alert {
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px; /* Add padding to the card for better spacing */
+}
+
+.card-body {
+    padding: 20px; /* Add padding to the card body for extra spacing */
+}
+
+form {
+    transition: box-shadow 0.3s ease;
+}
+
+    form:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+.text-muted {
+    font-size: 0.9em;
+}
+
+.table th {
+    text-align: center;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table {
+    margin-top: 20px;
+}
+
+.progress {
+    height: 20px;
+}
+
+.progress-bar {
+    font-weight: bold;
+}
+
+.badge {
+    font-size: 0.9em;
+}

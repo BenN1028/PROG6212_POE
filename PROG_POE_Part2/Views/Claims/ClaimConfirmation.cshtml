@@ -2,8 +2,15 @@
     ViewData["Title"] = "Claim Submitted";
 }
 
-<h2>Claim Submitted Successfully</h2>
-
-<p>Your claim has been submitted and is currently pending approval.</p>
-
-<a href="@Url.Action("Dashboard", "Home")">Return to Dashboard</a>
+<div class="container mt-5">
+    <div class="card text-center">
+        <div class="card-header bg-success text-white">
+            <h4>Claim Submitted Successfully</h4>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Your claim is currently pending approval.</h5>
+            <p class="card-text">Thank you for your submission! You will be notified once your claim has been reviewed.</p>
+            <a href="@Url.Action("Dashboard", "Home")" class="btn btn-primary">Return to Dashboard</a>
+        </div>
+    </div>
+</div>

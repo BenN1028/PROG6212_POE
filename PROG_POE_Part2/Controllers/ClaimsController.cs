@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PROG_POE_Part2.Models;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 
@@ -9,11 +10,7 @@ namespace PROG_POE_Part2.Controllers
     public class ClaimsController : Controller
     {
         // Simulated list of claims
-        public static List<Claim> claimsDb = new List<Claim>
-        {
-            new Claim { ClaimId = 1, Status = "Pending" },
-            new Claim { ClaimId = 2, Status = "Approved" }
-        };
+        public static List<Claim> claimsDb = new List<Claim>();
 
         // This method serves the form to submit a claim
         [HttpGet]
@@ -98,13 +95,13 @@ namespace PROG_POE_Part2.Controllers
                     supportingDocument.CopyTo(stream);
                 }
 
-                                var lecturerName = User.FindFirst(ClaimTypes.Name)?.Value;
+                var lecturerName = User.FindFirst(ClaimTypes.Name)?.Value;
 
                 // Create a new Claim object and add it to the claimsDb list
                 var newClaim = new Claim
                 {
                     ClaimId = claimsDb.Count + 1, // Generate a new ID
-                    LecturerName = lecturerName ?? "Unknown Lecturer",
+                    LecturerName = lecturerName,
                     HoursWorked = model.HoursWorked,
                     HourlyRate = model.HourlyRate,
                     DateSubmitted = DateTime.Now,
