@@ -7,4 +7,5 @@
     public DateTime DateSubmitted { get; set; }
     public string Notes { get; set; }
     public string Status { get; set; }
+    public string DocumentPath { get; set; }
 }

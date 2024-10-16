@@ -12,6 +12,7 @@
                 <th>Total Amount</th>
                 <th>Date Submitted</th>
                 <th>Notes</th>
+                <th>Document</th> <!-- Add a new column for Document -->
                 <th>Actions</th>
             </tr>
         </thead>
@@ -25,6 +26,21 @@
                     <td>@String.Format("{0:C}", (claim.HoursWorked * claim.HourlyRate))</td>
                     <td>@claim.DateSubmitted.ToShortDateString()</td>
                     <td>@claim.Notes</td>
+                    <td class="document-cell">
+                        @if (!string.IsNullOrEmpty(claim.DocumentPath))
+                        {
+                            // Ensure the DocumentPath starts with "uploads/"
+                            var documentPath = claim.DocumentPath.StartsWith("/") ? claim.DocumentPath : "/" + claim.DocumentPath;
+                            <a href="@Url.Content("~/uploads/" + System.IO.Path.GetFileName(claim.DocumentPath))" target="_blank">
+                                @System.IO.Path.GetFileName(claim.DocumentPath)
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No Document</span>
+                        }
+                    </td>
+
                     <td>
                         <form asp-action="ApproveClaim" asp-controller="Claims" method="post" style="display:inline;">
                             <input type="hidden" name="ClaimId" value="@claim.ClaimId" />
@@ -40,20 +56,3 @@
         </tbody>
     </table>
 </div>
-
-@section Styles {
-    <style>
-        /* Custom styles for the VerifyClaims page */
-        .table {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .badge {
-            font-size: 0.9rem;
-        }
-
-        .btn {
-            margin: 0 5px;
-        }
-    </style>
-}

@@ -140,6 +140,7 @@ namespace PROG_POE_Part2.Controllers
                 HourlyRate = c.HourlyRate,
                 DateSubmitted = c.DateSubmitted,
                 Notes = c.Notes,
+                DocumentPath = c.SupportingDocument,
                 Status = c.Status
             }).ToList();
 
