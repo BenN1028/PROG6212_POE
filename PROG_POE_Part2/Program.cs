@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Authentication.Cookies; // Add this for cookie authentication
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;  // Ensure this is using EF Core
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+// Add DbContext with MySQL
+builder.Services.AddDbContext<UserDbContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
 // Configure authentication
 builder.Services.AddAuthentication(options =>
@@ -21,7 +28,6 @@ builder.Services.AddAuthentication(options =>
     options.LoginPath = "/Account/Login"; // Redirect to login page if not authenticated
     options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to Access Denied page if unauthorized
 });
-
 
 // Add authorization policies if needed
 builder.Services.AddAuthorization(options =>

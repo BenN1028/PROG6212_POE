@@ -1,13 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
 
 public class LoginController : Controller
 {
+    private readonly UserDbContext _context;
+
+    public LoginController(UserDbContext context)
+    {
+        _context = context;
+    }
+
     // GET: Login
     public IActionResult Index()
     {
-        return View("Login"); // This should return the Login view
+        return View("Login");
     }
 
     // POST: Login
@@ -17,7 +23,8 @@ public class LoginController : Controller
         if (ModelState.IsValid)
         {
             // Fetch user from database based on login credentials
-            var user = GetUserFromDatabase(model.Username, model.Password);
+            var user = _context.Users
+                .FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
 
             if (user != null)
             {
@@ -36,23 +43,10 @@ public class LoginController : Controller
             }
             else
             {
-                ModelState.AddModelError("", "Invalid username or password."); // Error message for invalid login
+                ModelState.AddModelError("", "Invalid username or password.");
             }
         }
 
-        return View("Login", model); // Return the same view with the model if login fails
-    }
-
-    // Simulated method to get user details from the database
-    private User GetUserFromDatabase(string username, string password)
-    {
-        var users = new List<User>
-        {
-            new User { Username = "coordinator1", Password = "password", Role = "ProgrammeCoordinator" },
-            new User { Username = "manager1", Password = "password", Role = "AcademicManager" },
-            new User { Username = "lecturer1", Password = "password", Role = "Lecturer" }
-        };
-
-        return users.FirstOrDefault(u => u.Username == username && u.Password == password);
+        return View("Login", model);
     }
 }
