@@ -127,23 +127,24 @@ namespace PROG_POE_Part2.Controllers
                 return View(); // Return 403 Forbidden if the user is not authorized
             }
 
-            // Fetch all pending claims
-            var pendingClaims = claimsDb.Where(c => c.Status == "Pending").ToList();
+            // Fetch all pending claims from the database
+            var pendingClaims = _context.Claims
+                .Where(c => c.Status == "Pending")
+                .Select(c => new ClaimViewModel
+                {
+                    ClaimId = c.ClaimId,
+                    LecturerName = c.LecturerName ?? "Unknown",
+                    HoursWorked = c.HoursWorked,
+                    HourlyRate = c.HourlyRate,
+                    DateSubmitted = c.DateSubmitted,
+                    Notes = c.Notes ?? "No notes provided",
+                    DocumentPath = c.SupportingDocument ?? string.Empty,
+                    Status = c.Status,
+                    RejectionReason = c.RejectionReason ?? "N/A"
+                })
+                .ToList();
 
-            var model = pendingClaims.Select(c => new ClaimViewModel
-            {
-                ClaimId = c.ClaimId,
-                LecturerName = c.LecturerName,
-                HoursWorked = c.HoursWorked,
-                HourlyRate = c.HourlyRate,
-                DateSubmitted = c.DateSubmitted,
-                Notes = c.Notes,
-                DocumentPath = c.SupportingDocument,
-                Status = c.Status,
-                RejectionReason = c.RejectionReason
-            }).ToList();
-
-            return View(model);
+            return View(pendingClaims);
         }
 
 
@@ -151,23 +152,35 @@ namespace PROG_POE_Part2.Controllers
         [HttpPost]
         public IActionResult ApproveClaim(int claimId)
         {
-            var claim = claimsDb.FirstOrDefault(c => c.ClaimId == claimId);
+            // Fetch the claim from the database
+            var claim = _context.Claims.FirstOrDefault(c => c.ClaimId == claimId);
+
             if (claim != null)
             {
+                // Update claim status
                 claim.Status = "Approved";
+
+                // Save changes to the database
+                _context.SaveChanges();
             }
+
             return RedirectToAction("VerifyClaims");
         }
 
         [HttpPost]
         public IActionResult RejectClaim(int claimId, string rejectionReason)
         {
-            var claim = claimsDb.FirstOrDefault(c => c.ClaimId == claimId);
+            var claim = _context.Claims.FirstOrDefault(c => c.ClaimId == claimId);
             if (claim != null)
             {
                 claim.Status = "Rejected";
-                claim.RejectionReason = rejectionReason; // Set the rejection reason
+
+                // Ensure rejectionReason is handled properly in case it's null
+                claim.RejectionReason = string.IsNullOrEmpty(rejectionReason) ? null : rejectionReason;
+
+                _context.SaveChanges();
             }
+
             return RedirectToAction("VerifyClaims");
         }
 
