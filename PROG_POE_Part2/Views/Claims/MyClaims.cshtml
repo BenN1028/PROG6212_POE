@@ -12,6 +12,7 @@
                     <th>Total Amount</th>
                     <th>Progress</th>
                     <th>Rejection Reason</th>
+                    <th>Document</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,6 +41,18 @@
                             else
                             {
                                 <span class="text-muted">No Rejection Reason</span>  <!-- If there's no rejection reason, show N/A -->
+                            }
+                        </td>
+                        <td class="document-cell">
+                            @if (!string.IsNullOrEmpty(claim.DocumentPath))
+                            {
+                                <a href="@Url.Content("~/uploads/" + System.IO.Path.GetFileName(claim.DocumentPath))" target="_blank">
+                                    @System.IO.Path.GetFileName(claim.DocumentPath)
+                                </a>
+                            }
+                            else
+                            {
+                                <span>No Document</span>
                             }
                         </td>
                     </tr>

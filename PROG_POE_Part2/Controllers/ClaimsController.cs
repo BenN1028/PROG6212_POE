@@ -186,6 +186,7 @@ namespace PROG_POE_Part2.Controllers
                 HoursWorked = c.HoursWorked,
                 HourlyRate = c.HourlyRate,
                 Status = c.Status,
+                DocumentPath = c.SupportingDocument,
                 RejectionReason = c.RejectionReason
             }).ToList();
 
