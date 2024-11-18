@@ -174,21 +174,35 @@ namespace PROG_POE_Part2.Controllers
         [HttpGet]
         public IActionResult MyClaims()
         {
-            var lecturerName = User.FindFirst(ClaimTypes.Name)?.Value;
-            var lecturerName1 = lecturerName; ;
-            var myClaims = claimsDb.Where(c => c.LecturerName == lecturerName).ToList();
+            // Retrieve the username from the session
+            var lecturerName = HttpContext.Session.GetString("Username");
 
-            var model = myClaims.Select(c => new ClaimViewModel
+            if (string.IsNullOrEmpty(lecturerName))
             {
-                ClaimId = c.ClaimId,
-                HoursWorked = c.HoursWorked,
-                HourlyRate = c.HourlyRate,
-                Status = c.Status,
-                DocumentPath = c.SupportingDocument,
-                RejectionReason = c.RejectionReason
-            }).ToList();
+                // Redirect to login if the username is not found
+                return RedirectToAction("Login", "Login");
+            }
 
-            return View(model);
+            // Fetch claims for the logged-in user from the database
+            var myClaims = _context.Claims
+                .Where(c => c.LecturerName != null && c.LecturerName == lecturerName)
+                .Select(c => new ClaimViewModel
+                {
+                    ClaimId = c.ClaimId,
+                    LecturerName = c.LecturerName ?? "Unknown",
+                    HoursWorked = c.HoursWorked,
+                    HourlyRate = c.HourlyRate,
+                    DateSubmitted = c.DateSubmitted,
+                    Notes = c.Notes ?? "No notes provided",
+                    Status = c.Status ?? "Pending",
+                    DocumentPath = c.SupportingDocument ?? string.Empty,
+                    RejectionReason = c.RejectionReason ?? "Not applicable"
+                })
+                .ToList();
+
+
+            // Pass the list to the view
+            return View(myClaims);
         }
     }
 }
