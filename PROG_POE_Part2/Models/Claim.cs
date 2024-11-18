@@ -11,6 +11,8 @@
     public string Status { get; set; }  // "Pending", "Approved", "Rejected"
     public string RejectionReason { get; set; }
 
+    public decimal TotalAmount { get; private set; }
+
     public int GetProgressPercentage()
     {
         return Status switch

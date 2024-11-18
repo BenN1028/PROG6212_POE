@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PROG_POE_Part2.Models;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,6 +10,12 @@ namespace PROG_POE_Part2.Controllers
 {
     public class ClaimsController : Controller
     {
+        private readonly UserDbContext _context;
+
+        public ClaimsController(UserDbContext context)
+        {
+            _context = context;
+        }
         // Simulated list of claims
         public static List<Claim> claimsDb = new List<Claim>();
 
@@ -53,71 +60,62 @@ namespace PROG_POE_Part2.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Get the lecturer's username from the session
+                var lecturerName = HttpContext.Session.GetString("Username");
+
+                // Ensure the username is valid (not null or empty)
+                if (string.IsNullOrEmpty(lecturerName))
+                {
+                    ModelState.AddModelError("", "Lecturer is not logged in.");
+                    return View(model);
+                }
+
                 // Check if a file was uploaded
                 if (supportingDocument == null)
                 {
-                    ModelState.AddModelError("SupportingDocument", "A supporting document is required."); // Error message for missing document
+                    ModelState.AddModelError("SupportingDocument", "A supporting document is required.");
                     return View(model);
                 }
 
                 // Validate file size (e.g., max 2 MB)
-                if (supportingDocument.Length > 2 * 1024 * 1024) // 2 MB
+                if (supportingDocument.Length > 2 * 1024 * 1024)
                 {
                     ModelState.AddModelError("SupportingDocument", "File size must be less than 2 MB.");
                     return View(model);
                 }
 
-                // Validate file type
-                var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
-                var fileExtension = Path.GetExtension(supportingDocument.FileName).ToLower();
-                if (!allowedExtensions.Contains(fileExtension))
-                {
-                    ModelState.AddModelError("SupportingDocument", "Only PDF, DOCX, and XLSX files are allowed.");
-                    return View(model);
-                }
-
-                // Define the uploads directory
-                var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
-
-                // Ensure the uploads directory exists
-                if (!Directory.Exists(uploadsDir))
-                {
-                    Directory.CreateDirectory(uploadsDir); // Create the directory if it does not exist
-                }
-
-                // Store the file securely
+                // Store the file
                 var fileName = Path.GetFileNameWithoutExtension(supportingDocument.FileName);
-                var newFileName = $"{fileName}_{Guid.NewGuid()}{fileExtension}"; // Ensure unique file name
-                var filePath = Path.Combine(uploadsDir, newFileName);
-
+                var fileExtension = Path.GetExtension(supportingDocument.FileName);
+                var newFileName = $"{fileName}_{Guid.NewGuid()}{fileExtension}";
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", newFileName);
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     supportingDocument.CopyTo(stream);
                 }
 
-                var lecturerName = User.FindFirst(ClaimTypes.Name)?.Value;
-
-                // Create a new Claim object and add it to the claimsDb list
+                // Create a new Claim object and add it to the database
                 var newClaim = new Claim
                 {
-                    ClaimId = claimsDb.Count + 1, // Generate a new ID
-                    LecturerName = lecturerName,
+                    LecturerName = lecturerName,  // Set LecturerName from the session (logged-in user)
                     HoursWorked = model.HoursWorked,
                     HourlyRate = model.HourlyRate,
                     DateSubmitted = DateTime.Now,
                     Notes = model.Notes,
-                    SupportingDocument = newFileName, // Store the document name
-                    Status = "Pending" // Default status for new claims
+                    SupportingDocument = newFileName,
+                    Status = "Pending"
                 };
 
-                claimsDb.Add(newClaim); // Add to the list
-                ViewBag.UploadedFileName = newFileName; // Show uploaded file name
+                _context.Claims.Add(newClaim);
+                _context.SaveChanges();
 
                 return RedirectToAction("ClaimConfirmation");
             }
 
             return View(model);
         }
+
+
 
         // This method fetches and displays pending claims
         [HttpGet]
