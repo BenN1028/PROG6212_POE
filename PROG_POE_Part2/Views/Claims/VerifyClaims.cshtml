@@ -12,7 +12,7 @@
                 <th>Total Amount</th>
                 <th>Date Submitted</th>
                 <th>Notes</th>
-                <th>Document</th> <!-- Add a new column for Document -->
+                <th>Document</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -29,8 +29,6 @@
                     <td class="document-cell">
                         @if (!string.IsNullOrEmpty(claim.DocumentPath))
                         {
-                            // Ensure the DocumentPath starts with "uploads/"
-                            var documentPath = claim.DocumentPath.StartsWith("/") ? claim.DocumentPath : "/" + claim.DocumentPath;
                             <a href="@Url.Content("~/uploads/" + System.IO.Path.GetFileName(claim.DocumentPath))" target="_blank">
                                 @System.IO.Path.GetFileName(claim.DocumentPath)
                             </a>
@@ -46,8 +44,13 @@
                             <input type="hidden" name="ClaimId" value="@claim.ClaimId" />
                             <button type="submit" class="btn btn-success btn-sm">Approve</button>
                         </form>
+
                         <form asp-action="RejectClaim" asp-controller="Claims" method="post" style="display:inline;">
                             <input type="hidden" name="ClaimId" value="@claim.ClaimId" />
+                            <div class="form-group">
+                                <label for="RejectionReason">Reason for Rejection</label>
+                                <input type="text" class="form-control" name="RejectionReason" id="RejectionReason" placeholder="Enter reason" />
+                            </div>
                             <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                         </form>
                     </td>

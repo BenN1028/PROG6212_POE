@@ -8,4 +8,5 @@
     public string Notes { get; set; }
     public string Status { get; set; }
     public string DocumentPath { get; set; }
+    public string RejectionReason { get; set; }
 }

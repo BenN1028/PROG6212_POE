@@ -9,6 +9,7 @@
     public string SupportingDocument { get; set; } // Added property for the uploaded document
 
     public string Status { get; set; }  // "Pending", "Approved", "Rejected"
+    public string RejectionReason { get; set; }
 
     public int GetProgressPercentage()
     {

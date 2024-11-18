@@ -141,7 +141,8 @@ namespace PROG_POE_Part2.Controllers
                 DateSubmitted = c.DateSubmitted,
                 Notes = c.Notes,
                 DocumentPath = c.SupportingDocument,
-                Status = c.Status
+                Status = c.Status,
+                RejectionReason = c.RejectionReason
             }).ToList();
 
             return View(model);
@@ -161,12 +162,13 @@ namespace PROG_POE_Part2.Controllers
         }
 
         [HttpPost]
-        public IActionResult RejectClaim(int claimId)
+        public IActionResult RejectClaim(int claimId, string rejectionReason)
         {
             var claim = claimsDb.FirstOrDefault(c => c.ClaimId == claimId);
             if (claim != null)
             {
                 claim.Status = "Rejected";
+                claim.RejectionReason = rejectionReason; // Set the rejection reason
             }
             return RedirectToAction("VerifyClaims");
         }
@@ -183,7 +185,8 @@ namespace PROG_POE_Part2.Controllers
                 ClaimId = c.ClaimId,
                 HoursWorked = c.HoursWorked,
                 HourlyRate = c.HourlyRate,
-                Status = c.Status
+                Status = c.Status,
+                RejectionReason = c.RejectionReason
             }).ToList();
 
             return View(model);

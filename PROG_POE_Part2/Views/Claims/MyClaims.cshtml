@@ -10,8 +10,8 @@
                     <th>Claim ID</th>
                     <th>Hours Worked</th>
                     <th>Total Amount</th>
-                    <th>Status</th>
                     <th>Progress</th>
+                    <th>Rejection Reason</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,9 +22,6 @@
                         <td>@claim.HoursWorked</td>
                         <td>@String.Format("{0:C}", (claim.HoursWorked * claim.HourlyRate))</td>
                         <td>
-                            <span class="badge @GetStatusBadgeClass(claim.Status)">@claim.Status</span>
-                        </td>
-                        <td>
                             <!-- Progress Bar -->
                             <div class="progress">
                                 <div class="progress-bar @GetProgressBarClass(claim.Status)" role="progressbar"
@@ -34,6 +31,16 @@
                                     @claim.Status
                                 </div>
                             </div>
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(claim.RejectionReason))
+                            {
+                                <span>@claim.RejectionReason</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No Rejection Reason</span>  <!-- If there's no rejection reason, show N/A -->
+                            }
                         </td>
                     </tr>
                 }
