@@ -2,47 +2,82 @@
 using System.IO;
 using CrystalDecisions.CrystalReports.Engine;
 using CrystalDecisions.Shared;
+using ClosedXML;
+using ClosedXML.Excel;
 
 public class HRController : Controller
 {
-    // POST: Export to PDF
+    private readonly UserDbContext _context;
+
+    public HRController(UserDbContext context)
+    {
+        _context = context;
+    }
+
     [HttpPost]
-    public IActionResult ExportToPDF()
+    public IActionResult ExportToExcel()
     {
         try
         {
-            // Path to the Crystal Report file (.rpt)
-            string reportPath = Path.Combine(Directory.GetCurrentDirectory(), "Reports", "ApprovedClaimsReport.rpt");
+            // Fetch approved claims
+            var approvedClaims = _context.Claims
+                .Where(c => c.Status == "Approved")
+                .Select(c => new
+                {
+                    c.ClaimId,
+                    c.LecturerName,
+                    c.HoursWorked,
+                    c.HourlyRate,
+                    TotalAmount = c.HoursWorked * c.HourlyRate,
+                    c.DateSubmitted,
+                    c.Status,
+                    c.Notes
+                })
+                .ToList();
 
-            // Load the Crystal Report
-            ReportDocument reportDocument = new ReportDocument();
-            reportDocument.Load(reportPath);
+            // Generate the Excel file
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Approved Claims");
+                var currentRow = 1;
 
-            // Set the data source for the report (fetch approved claims)
-            var approvedClaims = GetApprovedClaims(); // Replace with your actual method
-            reportDocument.SetDataSource(approvedClaims);
+                // Add headers
+                worksheet.Cell(currentRow, 1).Value = "Claim ID";
+                worksheet.Cell(currentRow, 2).Value = "Lecturer Name";
+                worksheet.Cell(currentRow, 3).Value = "Hours Worked";
+                worksheet.Cell(currentRow, 4).Value = "Hourly Rate";
+                worksheet.Cell(currentRow, 5).Value = "Total Amount";
+                worksheet.Cell(currentRow, 6).Value = "Date Submitted";
+                worksheet.Cell(currentRow, 7).Value = "Status";
+                worksheet.Cell(currentRow, 8).Value = "Notes";
 
-            // Export the report to PDF format
-            Stream reportStream = reportDocument.ExportToStream(ExportFormatType.PortableDocFormat);
+                // Add data
+                foreach (var claim in approvedClaims)
+                {
+                    currentRow++;
+                    worksheet.Cell(currentRow, 1).Value = claim.ClaimId;
+                    worksheet.Cell(currentRow, 2).Value = claim.LecturerName;
+                    worksheet.Cell(currentRow, 3).Value = claim.HoursWorked;
+                    worksheet.Cell(currentRow, 4).Value = claim.HourlyRate;
+                    worksheet.Cell(currentRow, 5).Value = claim.TotalAmount;
+                    worksheet.Cell(currentRow, 6).Value = claim.DateSubmitted.ToString("dd MMM yyyy");
+                    worksheet.Cell(currentRow, 7).Value = claim.Status;
+                    worksheet.Cell(currentRow, 8).Value = claim.Notes;
+                }
 
-            // Return the PDF as a file download
-            return File(reportStream, "application/pdf", "ApprovedClaimsReport.pdf");
+                // Save to memory stream
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    stream.Position = 0;
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ApprovedClaims.xlsx");
+                }
+            }
         }
         catch (Exception ex)
         {
-            // Handle exceptions and return error message
-            return BadRequest($"An error occurred while generating the report: {ex.Message}");
+            // Log the error (adjust logging as needed)
+            return BadRequest($"An error occurred: {ex.Message}");
         }
-    }
-
-    // Mock data source for demonstration (replace with actual database query)
-    private List<Claim> GetApprovedClaims()
-    {
-        // Replace with actual database query to fetch approved claims
-        return new List<Claim>
-        {
-            new Claim { LecturerName = "John Doe", HoursWorked = 15, HourlyRate = 40, Status = "Approved" },
-            new Claim { LecturerName = "Jane Smith", HoursWorked = 18, HourlyRate = 45, Status = "Approved" }
-        };
     }
 }

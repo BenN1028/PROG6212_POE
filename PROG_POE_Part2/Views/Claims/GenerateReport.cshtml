@@ -1,5 +1,25 @@
 ﻿@model IEnumerable<ClaimViewModel>
 
+<head>
+    <style>
+        /* Style the table header and table data */
+        th, td {
+            padding: 8px;
+            vertical-align: middle;
+        }
+
+        /* Ensure headers and data cells are aligned properly */
+        th {
+            text-align: center;
+        }
+
+        td {
+            text-align: center; /* Default alignment for non-numeric columns */
+        }
+
+    </style>
+</head>
+
 <h2>Approved Claims</h2>
 
 <table class="table table-striped">
@@ -23,7 +43,7 @@
                 <td>@claim.LecturerName</td>
                 <td>@claim.HoursWorked</td>
                 <td>@claim.HourlyRate.ToString("C")</td>
-                <td>@claim.TotalAmount.ToString("C")</td>
+                <td>@claim.TotalAmount.ToString("C")</td> <!-- Display TotalAmount here -->
                 <td>@claim.DateSubmitted.ToString("dd MMM yyyy")</td>
                 <td>@claim.Status</td>
                 <td>@claim.Notes</td>
@@ -33,5 +53,7 @@
 </table>
 
 <div class="mt-3">
-    <a asp-action="ExportToCrystal" class="btn btn-primary">Export to PDF (Crystal Reports)</a>
+    <form asp-controller="HR" asp-action="ExportToExcel" method="post">
+        <button type="submit" class="btn btn-success">Export to Excel</button>
+    </form>
 </div>
