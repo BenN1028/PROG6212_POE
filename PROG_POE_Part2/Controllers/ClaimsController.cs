@@ -94,10 +94,10 @@ namespace PROG_POE_Part2.Controllers
                     supportingDocument.CopyTo(stream);
                 }
 
-                // Create a new Claim object and add it to the database
+                // Create a new Claim object
                 var newClaim = new Claim
                 {
-                    LecturerName = lecturerName,  // Set LecturerName from the session (logged-in user)
+                    LecturerName = lecturerName, // Set LecturerName from the session (logged-in user)
                     HoursWorked = model.HoursWorked,
                     HourlyRate = model.HourlyRate,
                     DateSubmitted = DateTime.Now,
@@ -106,16 +106,28 @@ namespace PROG_POE_Part2.Controllers
                     Status = "Pending"
                 };
 
+                // Automatically reject if hours or rate exceed the limits
+                if (newClaim.HoursWorked > 40)
+                {
+                    newClaim.Status = "Rejected";
+                    newClaim.RejectionReason = "Exceeded maximum allowed hours.";
+                }
+                else if (newClaim.HourlyRate > 100)
+                {
+                    newClaim.Status = "Rejected";
+                    newClaim.RejectionReason = "Hourly rate exceeds allowed limit.";
+                }
+
+                // Add the claim to the database
                 _context.Claims.Add(newClaim);
                 _context.SaveChanges();
 
+                // Redirect to confirmation page
                 return RedirectToAction("ClaimConfirmation");
             }
 
             return View(model);
         }
-
-
 
         // This method fetches and displays pending claims
         [HttpGet]
