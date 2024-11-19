@@ -106,7 +106,7 @@ namespace PROG_POE_Part2.Controllers
                     Status = "Pending"
                 };
 
-                // Automatically reject if hours or rate exceed the limits
+                // Automatic rejection if conditions are exceeded
                 if (newClaim.HoursWorked > 40)
                 {
                     newClaim.Status = "Rejected";
@@ -116,6 +116,11 @@ namespace PROG_POE_Part2.Controllers
                 {
                     newClaim.Status = "Rejected";
                     newClaim.RejectionReason = "Hourly rate exceeds allowed limit.";
+                }
+                // Automatic approval if conditions are met
+                else if (newClaim.HourlyRate < 50 || newClaim.HoursWorked < 20)
+                {
+                    newClaim.Status = "Approved";
                 }
 
                 // Add the claim to the database
