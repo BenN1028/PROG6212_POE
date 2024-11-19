@@ -17,6 +17,10 @@
             text-align: center; /* Default alignment for non-numeric columns */
         }
 
+        .button-container {
+            display: flex;
+            gap: 10px; /* Adjust space between buttons */
+        }
     </style>
 </head>
 
@@ -52,8 +56,12 @@
     </tbody>
 </table>
 
-<div class="mt-3">
+<div class="mt-3 button-container">
+    <!-- Export to Excel Button -->
     <form asp-controller="HR" asp-action="ExportToExcel" method="post">
         <button type="submit" class="btn btn-success">Export to Excel</button>
     </form>
+
+    <!-- View Users Button -->
+    <a href="@Url.Action("ViewUsers", "HR")" class="btn btn-info">View Users</a>
 </div>

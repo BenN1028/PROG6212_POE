@@ -4,6 +4,7 @@ using CrystalDecisions.CrystalReports.Engine;
 using CrystalDecisions.Shared;
 using ClosedXML;
 using ClosedXML.Excel;
+using Microsoft.EntityFrameworkCore;
 
 public class HRController : Controller
 {
@@ -79,5 +80,42 @@ public class HRController : Controller
             // Log the error (adjust logging as needed)
             return BadRequest($"An error occurred: {ex.Message}");
         }
+    }
+
+    public async Task<IActionResult> ViewUsers()
+    {
+        var users = await _context.Users
+            .Select(u => new User
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Role = u.Role,
+                ContactInfo = u.ContactInfo
+            })
+            .ToListAsync();
+
+        return View(users);
+    }
+
+    // Action to update user details
+    [HttpPost]
+    public IActionResult UpdateUser(int Id, string Username, string Role, string ContactInfo)
+    {
+        // Find the user in the database by Id
+        var user = _context.Users.FirstOrDefault(u => u.Id == Id); // Updated to use Id
+
+        if (user != null)
+        {
+            // Update the user fields with the new values
+            user.Username = Username;
+            user.Role = Role;
+            user.ContactInfo = ContactInfo;
+
+            // Save changes to the database
+            _context.SaveChanges();
+        }
+
+        // Redirect to the ViewUsers page to reflect the updated data
+        return RedirectToAction("ViewUsers");
     }
 }
