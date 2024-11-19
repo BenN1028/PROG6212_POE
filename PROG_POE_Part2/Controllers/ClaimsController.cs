@@ -234,5 +234,27 @@ namespace PROG_POE_Part2.Controllers
             // Pass the list to the view
             return View(myClaims);
         }
+
+        [HttpGet]
+        public IActionResult GenerateReport()
+        {
+            // Fetch only approved claims from the database
+            var approvedClaims = _context.Claims
+                .Where(c => c.Status == "Approved")
+                .Select(c => new ClaimViewModel
+                {
+                    ClaimId = c.ClaimId,
+                    LecturerName = c.LecturerName ?? "Unknown",
+                    HoursWorked = c.HoursWorked,
+                    HourlyRate = c.HourlyRate,
+                    DateSubmitted = c.DateSubmitted,
+                    Status = c.Status,
+                    Notes = c.Notes ?? "No notes provided",
+                    DocumentPath = c.SupportingDocument
+                })
+                .ToList();
+
+            return View(approvedClaims);
+        }
     }
 }

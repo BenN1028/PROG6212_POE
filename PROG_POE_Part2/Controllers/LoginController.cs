@@ -36,6 +36,10 @@ public class LoginController : Controller
                 {
                     return RedirectToAction("VerifyClaims", "Claims");
                 }
+                else if (user.Role == "HR")
+                {
+                    return RedirectToAction("GenerateReport", "Claims");
+                }
                 else
                 {
                     return RedirectToAction("Dashboard", "Home");

@@ -1,0 +1,37 @@
+﻿@model IEnumerable<ClaimViewModel>
+
+<h2>Approved Claims</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Claim ID</th>
+            <th>Lecturer Name</th>
+            <th>Hours Worked</th>
+            <th>Hourly Rate</th>
+            <th>Total Amount</th>
+            <th>Date Submitted</th>
+            <th>Status</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.ClaimId</td>
+                <td>@claim.LecturerName</td>
+                <td>@claim.HoursWorked</td>
+                <td>@claim.HourlyRate.ToString("C")</td>
+                <td>@claim.TotalAmount.ToString("C")</td>
+                <td>@claim.DateSubmitted.ToString("dd MMM yyyy")</td>
+                <td>@claim.Status</td>
+                <td>@claim.Notes</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="mt-3">
+    <a asp-action="ExportToCrystal" class="btn btn-primary">Export to PDF (Crystal Reports)</a>
+</div>
