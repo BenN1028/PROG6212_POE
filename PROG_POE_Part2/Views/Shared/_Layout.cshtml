@@ -17,7 +17,14 @@
             <ul>
                 @if (HttpContextAccessor.HttpContext.Session.GetString("Username") != null) // User is logged in
                 {
-                    <li><a asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                    @if (HttpContextAccessor.HttpContext.Request.Path.Value.Contains("ViewUsers")) // Specific to ViewUsers page
+                    {
+                        <li><a asp-controller="Claims" asp-action="GenerateReport">Generate Report</a></li>
+                    }
+                    else
+                    {
+                        <li><a asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                    }
                     <li><a asp-controller="Home" asp-action="Privacy">Privacy</a></li>
                     <li><a asp-controller="Home" asp-action="Logout">Logout</a></li>
                 }
@@ -28,6 +35,7 @@
             </ul>
         </nav>
     </header>
+
 
     <div class="container flex-grow-1">
         @RenderBody()
